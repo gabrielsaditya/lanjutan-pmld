@@ -1,0 +1,42 @@
+//akan berhenti saat limitB ditekan, dan akan berjalan kembali disaat ditekan lagi
+#include <Arduino.h>
+#include "Shading.h"
+#define MOTOR_DIR_CW    0
+#define MOTOR_DIR_CCW   1
+#define MOTOR_ENABLE    1
+#define MOTOR_DISABLE   0
+#define LimitA  8
+#define LimitB  9
+#define Pull    7
+#define Dir     6
+#define EN      5
+#define Sensor 3
+int nilai = 0;
+bool motorstate = 1;
+void setup() {
+  Serial.begin(9600);
+  pinMode(LimitA, INPUT_PULLUP);
+  pinMode(LimitB, INPUT_PULLUP);
+  pinMode(Sensor, INPUT);
+  shading_motor_init(Pull, Dir, EN);
+}
+
+void loop() {
+  bool stats = digitalRead(LimitB);
+  if (!stats){
+    nilai++;
+    Serial.print("nilai = ");
+    Serial.println(nilai);
+  }
+  while (!digitalRead(LimitB)){
+    delay(30);
+  }
+  if (nilai == 99){
+    nilai = 0;
+  }
+  if (nilai % 2 == 0){
+    shading_motor_set(MOTOR_DIR_CW, Dir, MOTOR_DISABLE, EN);
+  } else
+  shading_motor_set(MOTOR_DIR_CW, Dir, MOTOR_ENABLE, EN);
+  shading_motor_step(1, Pull);
+  }
